@@ -1,0 +1,215 @@
+﻿<script>
+    class myHtml {
+        name = "";
+        selfClosed = 0;
+        text = "";
+        atributes = {}
+        styles = {};
+        childrens = {};
+        htmlResult = "";
+        //Реализовать класс, описывающий html элемент. Класс HtmlElement должен содержать внутри себя:
+        // название тега;
+        // самозакрывающийся тег или нет;
+        // текстовое содержимое;
+        // массив атрибутов;
+        // массив стилей;
+        // массив вложенных таких же тегов;
+
+        //метод для установки атрибута;
+        // метод для установки стиля;
+        // метод для добавления вложенного элемента в конец теку-щего элемента;
+        // метод  для  добавления  вложенного  элемента  в  начало  те-кущего элемента;
+        // етод getHtml(),  который  возвращает  html  код  в  виде  строки, включая html код вложенных элементов.
+
+        constructor(x) {
+
+            // текущий родитель узел
+            this.name = x.name;
+            this.atributes = x.atributes;
+            this.styles = x.styles;
+            this.text = x.text;
+            // признак самозакрывающегося тега
+            this.selfClosed = x.selfClosed;
+            // его дети
+            this.childrens = x.childrens;
+
+        }
+
+        // строка атрибута стиль вида
+        // style ="property: value; "
+        setStyle() {
+            let style = ' style ="';
+            for (let property in this.styles) {
+                style += ' ' + property + ": " + this.styles[property] + ";";
+            }
+            style += '"';
+            return style;
+        }
+
+        // строка атрибутов тега вида
+        // id="value" data="val"
+        setAtributes() {
+            let atr = "";
+            for (let property in this.atributes) {
+                atr += ' ' + property + '= "' + this.atributes[property] + '"';
+            }
+            return atr;
+        }
+
+
+        getHtml() {
+
+            // первый тег парного/одинарного тега
+            this.htmlResult += "<" + this.name + " ";
+            this.htmlResult += this.setStyle();
+            this.htmlResult += this.setAtributes();
+            // первый ТЕГ закрываем
+            this.htmlResult += ">";
+
+
+            // Text контент
+            if (this.text) this.htmlResult += this.text;
+
+
+            // есть закрывающий тег и могут быть дети?
+            if (!this.selfClosed) {
+                // если есть дети перебираем и кадогоребенка вызваем grtHtml у ребенка
+                for (let chld in this.childrens) {
+                    //console.log(this.childrens[chld])
+                    let newChld = new myHtml(this.childrens[chld]);
+                    this.htmlResult += newChld.getHtml();
+                }
+
+                // конец УЗЛА БЛОКА
+                this.htmlResult += "</" + this.name + ">";
+            }
+
+            //wrapper.setAtributes();
+            console.log("getHTML", this.htmlResult);
+
+            return this.htmlResult;
+        }
+
+        /** ВТОРАЯ ЧАСТЬ ЗАДАНИЯ **/
+        // рекурсивная функция перебора обьекта для модфикации выбранной ветви
+        // функция которая рекурсивно проходит весь обект
+        // находит нгужного рдителя и детям добвляет нрогоо в конец либо в начало
+        scanObjectRecursive(parentID, childrenObj, parentObj) {
+            for (let chld in parentObj.childrens) {
+                parentObj.childrens[chld] = this.scanObjectRecursive(parentID, childrenObj, parentObj.childrens[chld])
+            }
+            if (parentObj.atributes.id === parentID)
+                parentObj.childrens.push(childrenObj);
+            return parentObj;
+        }
+
+
+    }
+
+    //структура документа
+    //структура документа
+    let beginObj = {
+        name: "div",
+        atributes: {
+            id: "wrapper",
+        },
+        styles: {
+            display: "flex",
+            border: "1px solid red"
+        },
+        childrens: [
+            {
+                name: "div",
+                atributes: {
+                    id: "wrapper2",
+                },
+                styles: {
+                    display: "flex",
+                    border: "1px solid red"
+                },
+                childrens: [
+                    {
+                        name: "p",
+                        text: "Както текст !",
+                        atributes: {
+                            id: "wrapper2-1",
+                        },
+                        styles: {
+                            display: "flex",
+                            border: "1px solid red"
+                        },
+                        childrens: []
+                    },
+                    {
+                        name: "img",
+                        atributes: {
+                            id: "wrapper2-2",
+                            src: "https://www.google.com/images/branding/googlelogo/2x/googlelogo_color_92x30dp.png"
+                        },
+                        styles: {
+                            display: "flex",
+                            border: "1px solid red"
+                        },
+                        selfClosed: 1,
+                        childrens: []
+                    },
+                ]
+            },
+            {
+                name: "div",
+                atributes: {
+                    id: "wrapper3",
+                },
+                styles: {
+                    display: "flex",
+                    border: "1px solid red"
+                },
+                childrens: []
+            }
+
+
+        ]
+    };
+
+    // первая часть задания
+    // первая часть задания
+    // первая часть задания
+    let wrapper = new myHtml(beginObj);
+    // выаодит DOM
+    document.write(wrapper.getHtml());
+
+
+    // вторая часть ЗАДАНИЯ модифицирем добавляем детей
+    // вторая часть ЗАДАНИЯ модифицирем добавляем детей
+    let addChkl = {
+        name: "span",
+        text: "!!!!!!!!!!!!!!!",
+        atributes: {
+            id: "wrapperNEWADD",
+        },
+        styles: {
+            display: "flex",
+            border: "1px solid red"
+        },
+        childrens: []
+    }
+
+    // стирает, модифицирует, пишет
+    // выбираем жертву по ID
+    // модифицируем список детей определенных родиелей
+    // принимает ID родеителя, ребенка что надо вставить, родителя
+
+    let new_wrapper = new myHtml(
+        wrapper.scanObjectRecursive(
+            "wrapper2",
+            addChkl,
+            beginObj
+        )
+    );
+    document.body.innerHTML = '';
+    document.write(new_wrapper.getHtml());
+
+
+    //
+</script>
+
